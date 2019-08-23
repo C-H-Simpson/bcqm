@@ -27,8 +27,8 @@ More:
 
 import numpy as np
 import xarray as xr
-import helper
-from helper import find_nearest, tic, toc
+from . import helper
+from .helper import find_nearest, tic, toc
 import pandas as pd
 import calendar
 import itertools
@@ -224,9 +224,10 @@ def standardise_da_coords(da, STANDARDISE_COORDS=True, NORMALISE_TO_DATE_ONLY=Tr
         da = rename_coord(da, 'longitude', 'lon')
         da = rename_coord(da, 'latitude', 'lat')
 
-        if da.lat.values.size > 1 and da.lon.values.size > 1:
-            da = ascend_coords(da)  # Reorder coordinates to ascend
-        da = round_coords(da)   # Round coordinates to 2 decimals
+        if 'lat' in da.coords.dims  and 'lon' in da.coords.dims: # to accept 1D DataArrays
+            if da.lat.values.size > 1 and da.lon.values.size > 1:
+                da = ascend_coords(da)  # Reorder coordinates to ascend
+            da = round_coords(da)   # Round coordinates to 2 decimals
     # else:
     #     print("(Not standardising coordinates)")
 
@@ -262,18 +263,22 @@ def simple_preprocess_1d(da,
     """
 
     # (1) Standardise coordinates (default setting)
-
     da = standardise_da_coords(da)
 
     # (2) Roll longitude if necessary and extract coordinates
-    if da.lon.values.size > 1 or da.lat.values.size > 1:
-        if lon is not None and lat is not None:
-            if lon < 0:
-                da = roll_lon(da)
-            print("Extracting coordinate...")
-            da = da.interp(coords={'lon': lon, 'lat': lat}, method=interp_method)
-        else:
-            raise ValueError("Data array given not 1D - please specify longitude and latitude")
+    if (lon is None) & (lat is None) & (da.ndim is 1):
+        # if da is 1D, and lon and lat are not specified, then do not attempt to interpolate grid
+        # i.e., simply output data for a timeseries using current coordinate system
+        pass
+    else:
+        if da.lon.values.size > 1 or da.lat.values.size > 1:
+            if lon is not None and lat is not None:
+                if lon < 0:
+                    da = roll_lon(da)
+                print("Extracting coordinate...")
+                da = da.interp(coords={'lon': lon, 'lat': lat}, method=interp_method)
+            else:
+                raise ValueError("Data array given not 1D - please specify longitude and latitude")
 
     # (3) Slice time
     if year_start is not None and year_end is not None:
@@ -372,6 +377,8 @@ def round_coords(da, decimals=2):
     """
     Round up long + lat coordinates
     (Useful for aligning ERA-Interim data where different years have slightly different coodinate values but use with care)
+    TO DO: use np.isclose instead 
+            see https://github.com/scott-hosking/baspy/blob/4640eeec81ecfd0c319fb915916aaab4d0717167/_iris/util.py#L203
     """
     try:
         da['lat'] = np.around(da.lat, decimals=decimals)

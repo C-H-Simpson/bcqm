@@ -2,10 +2,10 @@ import numpy as np
 # import datetime
 # from datasim import create_data
 # from collections import defaultdict
-import helper
+from . import helper
 # import plot
 import pandas as pd
-import dataprocessing
+from . import dataprocessing
 import xarray as xr
 # import settings
 
@@ -308,7 +308,7 @@ class Config:
 
         if self.MODE is not 'timeseries':
 
-            from dataprocessing import Df_to_df, Detrend
+            from .dataprocessing import Df_to_df, Detrend
             df_to_df = Df_to_df()
             detrend = Detrend(MODE=self.MODE, polyfit_degrees=self.polyfit_degrees)  # Create detrend instance with MODE
 
