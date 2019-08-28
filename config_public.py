@@ -27,6 +27,8 @@ class Config:
                  x=None,
                  y=None,
 
+                 USE_RATIO=False,
+
                  REINSERT_TREND=False,   # DEPRECATED corrected_timeseries to include original trend in y (not trend in x)
                  PROJECT_TREND=True,     # projected_timeseries becomes available where trend in x is used
                  detrend_order=2,
@@ -199,7 +201,7 @@ class Config:
         self.test_quantiles = test_quantiles
 
         # Bias as ratio (otherwise absolute difference)
-        self.USE_RATIO = False
+        self.USE_RATIO = USE_RATIO
 
         self.verbose_dataprocessing = verbose_dataprocessing
 
