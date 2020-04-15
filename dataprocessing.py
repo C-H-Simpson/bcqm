@@ -651,17 +651,6 @@ class Df_to_df:
         Returns dataframe with list of values in specified window.
         If window_years larger than maximum allowed or set to 'all', uses all available years in df.
 
-        Profiling shows this function appears to take up the majority of the time of the program. Mainly via time spent in
-        406245    1.557  442.510  /home/champs/anaconda3/envs/bcqm/lib/python3.8/site-packages/pandas/core/indexes/datetimes.py:782(slice_indexer)
-        406245    0.936  187.166  /home/champs/anaconda3/envs/bcqm/lib/python3.8/site-packages/pandas/core/indexing.py:630(_slice)
-        406246    5.888    0.000  438.498    0.001 /home/champs/anaconda3/envs/bcqm/lib/python3.8/site-packages/pandas/core/indexes/base.py:4873(slice_locs)
-        812492    4.014  430.266  /home/champs/anaconda3/envs/bcqm/lib/python3.8/site-packages/pandas/core/indexes/base.py:4807(get_slice_bound)
-        812492    5.553  373.474  /home/champs/anaconda3/envs/bcqm/lib/python3.8/site-packages/pandas/core/indexes/datetimes.py:737(_maybe_cast_slice_bound)
-        812492   15.438  284.562  {pandas._libs.tslibs.parsing.parse_time_string}
-        812492   25.934   74.665  /home/champs/anaconda3/envs/bcqm/lib/python3.8/site-packages/pandas/core/indexes/datetimes.py:490(_parsed_string_to_bounds)
-
-        i.e. about half the total execution time of the program is spent parsing datetimes from strings
-
         PRESERVE_EDGES - even if using window_days the edges are preserved. Not done for window_years
 
         detrend_trend - trend to use for detrending pdf
@@ -705,13 +694,15 @@ class Df_to_df:
 
                 i_e = i + int(np.floor(window_days / 2))
                 i_e = -1 if i_e >= len(df) else i_e
+                ii_e = None if i_e == -1 else i_e+1
                 end_day = df.index[i_e]
 
-                vals.append(df.iloc[i_s : i_e].values.squeeze())
+                #vals.append(df.loc[str(start_day) : str(end_day)].values.squeeze())
+                vals.append(df.iloc[i_s : ii_e].values.squeeze())
                 dates.append(mid_day)
 
                 if PRESERVE_DATES:
-                    date_raw.append(df.iloc[i_s : i_e].index)
+                    date_raw.append(df.iloc[i_s : ii_e].index)
 
         else:
             # for start in range(len(df) - window_days):
@@ -722,13 +713,13 @@ class Df_to_df:
                 mid_day = df.index[int(start + window_days / 2)]
 
                 i_s = start
-                i_e = start + window_days - 1
-
-                vals.append(df.iloc[i_s : i_e].values.squeeze())
+                ii_e = start + window_days
+                #vals.append(df.loc[str(start_day) : str(end_day)].values.squeeze())
+                vals.append(df.iloc[i_s : ii_e].values.squeeze())
                 dates.append(mid_day)
 
                 if PRESERVE_DATES:
-                    date_raw.append(df.iloc[i_s : i_e].index)
+                    date_raw.append(df.iloc[i_s : ii_e].index)
 
         df_ = pd.DataFrame(index=dates, data={'data':vals})
 
