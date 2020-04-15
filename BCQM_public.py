@@ -5,7 +5,7 @@ BCQM v4 - vanilla QM
 import numpy as np
 import pandas as pd
 import itertools
-from scipy.stats import percentileofscore
+from scipy.stats import rankdata
 from scipy.stats import ks_2samp
 
 import dataprocessing
@@ -930,8 +930,8 @@ class BiasCorrection:
 
         # Pre-sort array and get quantiles for all data
         values = np.array(sorted(arr))
-        percentiles = np.array(
-            sorted([percentileofscore(values, i) for i in arr]))
+        #nb it is much faster to calculate percentiles en masse this way
+        percentiles = rankdata(values) / values.shape[-1] * 100.
 
         if n_quantiles is not None:
             step = 100 / (n_quantiles)
