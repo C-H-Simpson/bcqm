@@ -41,7 +41,7 @@ class BiasCorrection:
 
         self.config = config
 
-        if config.MODE is 'detrended_pdf' or config.MODE is 'detrended_polynomial':
+        if config.MODE == 'detrended_pdf' or config.MODE == 'detrended_polynomial':
             self.trend_x = config.trend_x
             self.trend_y = config.trend_y
         else:
@@ -86,8 +86,8 @@ class BiasCorrection:
         Warning: get_residuals returns all x and its errors (large files!)
         """
 
-        x = self.config.x if x is None else x
-        y = self.config.y if y is None else y
+        x = self.config.x if x == None else x
+        y = self.config.y if y == None else y
         self.i_grid = i_grid
         self.j_grid = j_grid
 
@@ -123,7 +123,7 @@ class BiasCorrection:
         self.x_test_ = x.loc['2018':'2100']
         self.y_test_ = y.loc['2018':'2100']
 
-        if self.config.ALGORITHM is not 'None':
+        if self.config.ALGORITHM != 'None':
             # (3) Calculate bias from training data
             self.train(self.x_train_, self.y_train_)
 
@@ -205,7 +205,7 @@ class BiasCorrection:
             self.x_test_ = x[x.index.year.isin(test_years)]
             self.y_test_ = y[y.index.year.isin(test_years)]
 
-            if self.config.ALGORITHM is not 'None':
+            if self.config.ALGORITHM != 'None':
                 # (3) Calculate bias from training data
                 # print(" - Calculating bias from training data...")
                 self.train(self.x_train_, self.y_train_)
@@ -368,7 +368,7 @@ class BiasCorrection:
         # ------------------------------------------ #
 
         if PROJECT_TREND:
-            if self.config.MODE is 'detrended_pdf':
+            if self.config.MODE == 'detrended_pdf':
                 _ = self.get_projected_trend()   # Get adjusted trend for future from model, self.trend_pdf_adjusted
                 if self.config.TREND_PDF_METHOD == 1:
                     trend_pdf_adjusted = self.trend_pdf_adjusted
@@ -376,7 +376,7 @@ class BiasCorrection:
                 else:
                     trend_pdf_adjusted = None
 
-            elif self.config.MODE is 'detrended_polynomial':
+            elif self.config.MODE == 'detrended_polynomial':
                 _ = self.get_projected_trend()
                 trend_pdf_adjusted = None
 
@@ -413,7 +413,7 @@ class BiasCorrection:
         # ------------------------------------------------------------------------------- #
         #  Reinsert original trend to raw corrections before taking average for each day  #
         # ------------------------------------------------------------------------------- #
-        if self.config.MODE is 'detrended_pdf' and self.config.TREND_PDF_METHOD == 1:
+        if self.config.MODE == 'detrended_pdf' and self.config.TREND_PDF_METHOD == 1:
             if 'trend_pdf' in corrected_all.columns:
                 corrected_all['data'] = corrected_all['data'] + corrected_all['trend_pdf']
 
@@ -453,7 +453,7 @@ class BiasCorrection:
         Get projected trend
         """
 
-        if self.config.MODE is 'detrended_polynomial':
+        if self.config.MODE == 'detrended_polynomial':
 
             # Get the end of the observation trends (end of historical)
             trend_y_train, _ = dataprocessing.intersect(self.config.trend_y, self.x_train_)  # tr_y
@@ -481,7 +481,7 @@ class BiasCorrection:
             self.trend_pdf_adjusted = trend_x_test_adjusted
 
 
-        elif self.config.MODE is 'detrended_pdf':
+        elif self.config.MODE == 'detrended_pdf':
 
             # Get the end of the observation trends (end of historical)
             trend_y_train, _ = dataprocessing.intersect(self.config.trend_y, self.x_train_)
@@ -520,10 +520,10 @@ class BiasCorrection:
 
         print("Obtaining projected timeseries...")
 
-        if self.config.MODE is 'timeseries':
+        if self.config.MODE == 'timeseries':
             self.projected_timeseries = self.corrected_timeseries
 
-        elif self.config.MODE is 'detrended_pdf':
+        elif self.config.MODE == 'detrended_pdf':
             if self.config.TREND_PDF_METHOD == 1:
                 self.projected_timeseries = self.corrected_timeseries
 
@@ -545,7 +545,7 @@ class BiasCorrection:
                     index=projected_group['date_raw'], data={'data': vals.values}
                 )
 
-        elif self.config.MODE is 'detrended_polynomial':
+        elif self.config.MODE == 'detrended_polynomial':
 
             self.projected_timeseries = self.corrected_timeseries.copy()
             self.projected_timeseries['data'] = self.corrected_timeseries['data'] + self.trend_pdf_adjusted.values.squeeze()
@@ -620,7 +620,7 @@ class BiasCorrection:
         #if y_test_corrected_pdf is None:
 
         if self.config.PROJECT_TREND:
-            if self.config.MODE is 'detrended_pdf' and self.config.TREND_PDF_METHOD == 1:
+            if self.config.MODE == 'detrended_pdf' and self.config.TREND_PDF_METHOD == 1:
                 detrend_trend = self.trend_pdf_adjusted
             else:
                 detrend_trend = None
@@ -686,7 +686,7 @@ class BiasCorrection:
 
 
         # (1) Find RMSE average for each test years (time of year, quantile)
-        if self.config.window_years is 'all':
+        if self.config.window_years == 'all':
             """ technically residuals (MAKE +VE) """
             rmse_all = df_residuals['residuals'].apply(np.array).values
             self.rmse_all = np.abs([np.stack(i) for i in rmse_all])
@@ -780,7 +780,7 @@ class BiasCorrection:
 
             df_d.at[x_train_pdf.index[t], 'delta'] = delta
 
-        if self.config.window_years is 'all':
+        if self.config.window_years == 'all':
             df_d_grouped = df_d.values
         else:
             df_d_grouped = df_d.groupby([df_d.index.month, df_d.index.day])[
@@ -824,7 +824,7 @@ class BiasCorrection:
         # dummy_yr = np.unique([date.year for date in self.x_train_pdf.index])[1]  # Not using index 0 as it might not have full length year
         # m_d = self.x_train_pdf.loc[str(dummy_yr)].index.strftime('%m-%d')
 
-        if self.config.window_years is 'all':
+        if self.config.window_years == 'all':
             m_d = self.x_train_pdf.index
         else:
             dummy_yr = np.unique([date.year for date in self.x_train_pdf.index])[
@@ -842,7 +842,7 @@ class BiasCorrection:
             test_pdf_ = x_test_pdf.iloc[t]
 
             # Get indices of bias value we're using
-            test_pdf_md = test_pdf_.name if self.config.window_years is 'all' else test_pdf_.name.strftime(
+            test_pdf_md = test_pdf_.name if self.config.window_years == 'all' else test_pdf_.name.strftime(
                 '%m-%d')
             mean_bias_ind = int(np.where(m_d == test_pdf_md)[0])
 

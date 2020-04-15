@@ -266,7 +266,7 @@ def simple_preprocess_1d(da,
     da = standardise_da_coords(da)
 
     # (2) Roll longitude if necessary and extract coordinates
-    if (lon is None) & (lat is None) & (da.ndim is 1):
+    if (lon is None) & (lat is None) & (da.ndim == 1):
         # if da is 1D, and lon and lat are not specified, then do not attempt to interpolate grid
         # i.e., simply output data for a timeseries using current coordinate system
         pass
@@ -604,7 +604,7 @@ class Df_to_df:
         if verbose:
             print("Creating pdf...")
 
-        PRESERVE_EDGES = True if window_years is 'all' else PRESERVE_EDGES
+        PRESERVE_EDGES = True if window_years == 'all' else PRESERVE_EDGES
 
         # ---------------- #
         #  Roll windows    #
@@ -624,7 +624,7 @@ class Df_to_df:
         #  Subsample    #
         # ------------- #
         # if n_subsample_days is not None or n_subsample_days is not 0:
-        if n_subsample_days is not None and n_subsample_days is not 0:
+        if n_subsample_days is not None and n_subsample_days != 0:
             if verbose:
                 print("Subsampling pdf...")
             df_ = subsample(df_, n_subsample_days, 1)
@@ -672,7 +672,7 @@ class Df_to_df:
                 raise ValueError('window_years must be odd.')
 
         max_window_years = df.index[-1].year - df.index[0].year
-        if window_years is 'all':
+        if window_years == 'all':
             window_years_original = 'all'
             window_years = max_window_years + 1
 
@@ -800,7 +800,7 @@ class Df_to_df:
 
         elif window_years > max_window_years:
 
-            if window_years_original is not 'all':
+            if window_years_original != 'all':
                 print("WARNING: window_years is greater than len(years) in data, grouping all")
             df_ = self.group_years_in_list(df_,
                                            PRESERVE_DATES,
@@ -935,7 +935,7 @@ class Detrend:
 
             df_ = df.loc[(df.index.month == int(month)) & (df.index.day == int(day))]
 
-            if self.MODE is 'detrended_md_roll':
+            if self.MODE == 'detrended_md_roll':
 
                 """ If there are multiple values per m-d pair """
 
@@ -968,11 +968,11 @@ class Detrend:
                 detrended_timeseries = df_.values.squeeze() - df_trend['data'].values.squeeze()
                 df_detrended = pd.DataFrame(index=df_.index, data={'data': detrended_timeseries})
 
-            elif self.MODE is 'detrended_md':
+            elif self.MODE == 'detrended_md':
                 """ If there is only one value per m-d pair """
                 df_detrended, df_trend = self.detrend_df(df_, self.polyfit_degrees)
 
-            elif self.MODE is 'subtract_median_md':
+            elif self.MODE == 'subtract_median_md':
                 df_detrended, df_trend = self.subtract_median_md(df_)
 
             elif self.MODE is None:
