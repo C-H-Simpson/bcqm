@@ -2,10 +2,10 @@ import numpy as np
 # import datetime
 # from datasim import create_data
 # from collections import defaultdict
-from . import helper
+import helper
 # import plot
 import pandas as pd
-from . import dataprocessing
+import dataprocessing
 import xarray as xr
 # import settings
 
