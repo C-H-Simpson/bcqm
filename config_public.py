@@ -101,7 +101,7 @@ class Config:
         #  Detrending settings                           #
         # -----------------------------------------------#
 
-        if self.ALGORITHM == 'None':
+        if self.ALGORITHM is 'None':
             # print("Setting config.REINSERT_TREND = False because ALGORITHM is None")
             self.REINSERT_TREND = False
         else:
@@ -126,7 +126,7 @@ class Config:
 
         #self.TF = TF  # Run Tensorflow
         self.NORMALISE = NORMALISE
-        SUBSAMPLE = True if MODE == 'timeseries' else SUBSAMPLE  # Always subsample if we're not detrending data: keeping all original years as feature = cannot use set quantiles = too much data!
+        SUBSAMPLE = True if MODE is 'timeseries' else SUBSAMPLE  # Always subsample if we're not detrending data: keeping all original years as feature = cannot use set quantiles = too much data!
         self.SUBSAMPLE_REGRESSION = SUBSAMPLE  # Subsample PDF for training
 
         # Polynomial regression settings
@@ -190,7 +190,7 @@ class Config:
         # High quantile threshold for RMSE
         self.high_quantile_threshold = high_quantile_threshold
 
-        if self.ALGORITHM == 'regression_gp':
+        if self.ALGORITHM is 'regression_gp':
             print("Setting to n_quantiles='None' because MODE is 'regression_gp'".format(n_quantiles))
             self.n_quantiles = None
 
@@ -228,7 +228,7 @@ class Config:
         #-------------------
         if DATA == 'old':
             self.x = helper.open_pickle('./data/df/{}_{}_{}_{}.txt'.format(self.var, self.x_data, 'timeseries{}'.format(self.rcp), self.loc))
-            if self.y_data == 'era':
+            if self.y_data is 'era':
                 self.y = helper.open_pickle('./data/df/{}_{}_{}.txt'.format(self.var, 'era', self.loc))
                 self.x = self.x.loc[str(self.y.index[0].year):str(self.y.index[-1].year)]  # Adjust GCM years to match ERA
             else:
@@ -239,7 +239,7 @@ class Config:
         #------------------------------------
         elif DATA == 'new':
             self.x = helper.open_pickle('./data/df/new_{}_{}_{}_{}.txt'.format(self.var, self.x_data, 'timeseries{}'.format(self.rcp), self.loc))
-            if self.y_data == 'era':
+            if self.y_data is 'era':
                 self.y = helper.open_pickle('./data/df/new_{}_{}_{}.txt'.format(self.var, 'era', self.loc))
                 self.x = self.x.loc[str(self.y.index[0].year):str(self.y.index[-1].year)]  # Adjust GCM years to match ERA
             else:
@@ -275,7 +275,7 @@ class Config:
 
             self.y = y_hist
 
-        elif DATA == 'x_and_y':
+        elif DATA is 'x_and_y':
             if x is None or y is None:
                 raise ValueError("Please provide x and y")
             self.x = x
@@ -287,7 +287,7 @@ class Config:
         self.y_original = self.y.copy()
 
         # Make sure X and Y are the same size
-        if DATA != 'public' and DATA != 'x_and_y':
+        if DATA is not 'public' and DATA is not 'x_and_y':
             assert len(self.x) == len(self.y)
 
         # List of all years used in x and y
@@ -308,7 +308,7 @@ class Config:
         self.trend_y
         """
 
-        if self.MODE != 'timeseries':
+        if self.MODE is not 'timeseries':
 
             from dataprocessing import Df_to_df, Detrend
             df_to_df = Df_to_df()
@@ -318,7 +318,7 @@ class Config:
 
                 print("Getting trend data, config.MODE = {}...".format(self.MODE))
 
-                if self.MODE == 'detrended_md_roll':
+                if self.MODE is 'detrended_md_roll':
                     # Roll window_days for all days
                     # print("Creating PDF for detrend info...")
                     pdf = df_to_df.create_pdf(input,
@@ -330,16 +330,16 @@ class Config:
                                               )
                     output, trend = detrend.detrend_by_md(input, df_pdf=pdf)  # Output is detrended
 
-                elif self.MODE == 'detrended_md':
+                elif self.MODE is 'detrended_md':
                     output, trend = detrend.detrend_by_md(input)  # Output is detrended
 
-                elif self.MODE == 'subtract_median_md':
+                elif self.MODE is 'subtract_median_md':
                     output, trend = detrend.subtract_median_md(input)  # Output is detrended
 
-                elif self.MODE == 'detrended_polynomial':
+                elif self.MODE is 'detrended_polynomial':
                     output, trend = detrend.detrend_df(input)  # Output is detrended
 
-                elif self.MODE == 'detrended_pdf':
+                elif self.MODE is 'detrended_pdf':
                     # NEW: use PDF mean or median to construct trend for each day of year, detrend on pdf before QM is performed (not raw data like in detrend_md)
                     # print("Creating PDF for detrend info...")
                     pdf = df_to_df.create_pdf(input,
