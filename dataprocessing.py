@@ -685,24 +685,22 @@ class Df_to_df:
         date_raw = []
 
         if PRESERVE_EDGES:
+            raw_vals = df.values.squeeze()
+            dates = df.index.to_list()
             for i in range(len(df)):
                 i_s = i - int(np.floor(window_days / 2))
                 i_s = 0 if i_s < 0 else i_s
-                start_day = df.index[i_s]
-
-                mid_day = df.index[i]
 
                 i_e = i + int(np.floor(window_days / 2))
                 i_e = -1 if i_e >= len(df) else i_e
                 ii_e = None if i_e == -1 else i_e+1
-                end_day = df.index[i_e]
 
                 #vals.append(df.loc[str(start_day) : str(end_day)].values.squeeze())
-                vals.append(df.iloc[i_s : ii_e].values.squeeze())
-                dates.append(mid_day)
+                #vals.append(df.iloc[i_s : ii_e].values.squeeze())
+                vals.append(raw_vals[i_s : ii_e])
 
                 if PRESERVE_DATES:
-                    date_raw.append(df.iloc[i_s : ii_e].index)
+                    date_raw.append(df.index[i_s : ii_e])
 
         else:
             # for start in range(len(df) - window_days):
@@ -835,6 +833,7 @@ class Df_to_df:
         return df_
 
 
+    #@profile
     @staticmethod
     def group_years_in_list(df,
                             PRESERVE_DATES=False,
