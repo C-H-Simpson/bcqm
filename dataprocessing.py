@@ -717,7 +717,7 @@ class Df_to_df:
                 dates.append(mid_day)
 
                 if PRESERVE_DATES:
-                    date_raw.append(df.iloc[i_s : ii_e].index)
+                    date_raw.append(df.index[i_s : ii_e])
 
         df_ = pd.DataFrame(index=dates, data={'data':vals})
 
