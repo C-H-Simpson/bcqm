@@ -27,8 +27,8 @@ More:
 
 import numpy as np
 import xarray as xr
-import helper
-from helper import find_nearest, tic, toc
+from . import helper
+from .helper import find_nearest, tic, toc
 import pandas as pd
 import calendar
 import itertools

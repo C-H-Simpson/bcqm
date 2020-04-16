@@ -8,8 +8,8 @@ import itertools
 from scipy.stats import rankdata
 from scipy.stats import ks_2samp
 
-import dataprocessing
-from dataprocessing import Df_to_df
+from . import dataprocessing
+from .dataprocessing import Df_to_df
 df_to_df = Df_to_df()
 
 # try:
