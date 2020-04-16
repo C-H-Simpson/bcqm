@@ -110,5 +110,4 @@ dependencies:
   - pip:
     - joblib==0.14.1
     - scikit-learn==0.22.2.post1
-prefix: /home/champs/anaconda3/envs/bcqm
 
