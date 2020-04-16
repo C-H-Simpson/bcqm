@@ -310,7 +310,7 @@ class Config:
 
         if self.MODE is not 'timeseries':
 
-            from dataprocessing import Df_to_df, Detrend
+            from .dataprocessing import Df_to_df, Detrend
             df_to_df = Df_to_df()
             detrend = Detrend(MODE=self.MODE, polyfit_degrees=self.polyfit_degrees)  # Create detrend instance with MODE
 
