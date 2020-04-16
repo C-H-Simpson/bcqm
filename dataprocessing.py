@@ -833,7 +833,6 @@ class Df_to_df:
         return df_
 
 
-    #@profile
     @staticmethod
     def group_years_in_list(df,
                             PRESERVE_DATES=False,
